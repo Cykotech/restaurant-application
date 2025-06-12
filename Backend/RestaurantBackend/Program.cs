@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RestaurantBackend.Data;
+using RestaurantBackend.Features;
+using RestaurantBackend.Features.Tables.OpenTable;
 
 namespace RestaurantBackend;
 
@@ -11,10 +13,16 @@ public class Program
 
 		// Add services to the container.
 		builder.Services.AddControllers();
+
 		builder.Services.AddAuthorization();
 
 		builder.Services.AddDbContext<PosDbContext>(options =>
-			                                            options.UseSqlite("Data Source=pos.db"));
+			                                            options.UseSqlite(
+				                                            "Data Source=pos.db"));
+
+		builder.Services
+		       .AddScoped<IHandler<OpenTableRequest, OpenTableResponse>,
+			       OpenTableHandler>();
 
 		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 		builder.Services.AddEndpointsApiExplorer();
@@ -32,9 +40,9 @@ public class Program
 		app.UseHttpsRedirection();
 
 		app.UseAuthorization();
-		
+
 		app.MapControllers();
-		
+
 		app.Run();
 	}
 }
