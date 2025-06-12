@@ -5,4 +5,6 @@ riderModule.iml
 /_ReSharper.Caches/
 .idea
 pos.db
+pos.db-shm
+pos.db-wal
 *.http
