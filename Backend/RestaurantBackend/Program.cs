@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RestaurantBackend.Data;
 using RestaurantBackend.Features;
+using RestaurantBackend.Features.Tables.GetAll;
 using RestaurantBackend.Features.Tables.OpenTable;
 
 namespace RestaurantBackend;
@@ -23,6 +24,7 @@ public class Program
 		builder.Services
 		       .AddScoped<IHandler<OpenTableRequest, OpenTableResponse>,
 			       OpenTableHandler>();
+		builder.Services.AddScoped<IHandler<GetAllRequest, GetAllResponse>, GetAllHandler>();
 
 		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 		builder.Services.AddEndpointsApiExplorer();
