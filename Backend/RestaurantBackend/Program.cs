@@ -3,6 +3,7 @@ using RestaurantBackend.Data;
 using RestaurantBackend.Features;
 using RestaurantBackend.Features.Tables.CloseTable;
 using RestaurantBackend.Features.Tables.GetAll;
+using RestaurantBackend.Features.Tables.GetOpenTables;
 using RestaurantBackend.Features.Tables.GetTableStatus;
 using RestaurantBackend.Features.Tables.OpenTable;
 
@@ -34,6 +35,9 @@ public class Program
 		builder.Services
 		       .AddScoped<IHandler<CloseTableRequest, CloseTableResponse>,
 			       CloseTableHandler>();
+		builder.Services
+		       .AddScoped<IHandler<GetOpenTablesRequest, GetOpenTablesResponse>,
+			       GetOpenTablesHandler>();
 
 		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 		builder.Services.AddEndpointsApiExplorer();
