@@ -7,7 +7,7 @@ namespace RestaurantBackend.Data
 	{
 		public DbSet<Table> Tables { get; set; }
 		public DbSet<Order> Orders { get; set; }
-		public DbSet<OrderItem> OrderItems { get; set; }
+		public DbSet<MenuItem> OrderItems { get; set; }
 
 		public PosDbContext(DbContextOptions<PosDbContext> options) : base(options)
 		{}
