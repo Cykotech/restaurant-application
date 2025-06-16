@@ -1,11 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using RestaurantBackend.Data;
-using RestaurantBackend.Features;
-using RestaurantBackend.Features.Tables.CloseTable;
-using RestaurantBackend.Features.Tables.GetAll;
-using RestaurantBackend.Features.Tables.GetOpenTables;
-using RestaurantBackend.Features.Tables.GetTableStatus;
-using RestaurantBackend.Features.Tables.OpenTable;
 
 namespace RestaurantBackend;
 
@@ -24,21 +18,8 @@ public class Program
 			                                            options.UseSqlite(
 				                                            "Data Source=pos.db"));
 
-		builder.Services
-		       .AddScoped<IHandler<OpenTableRequest, OpenTableResponse>,
-			       OpenTableHandler>();
-		builder.Services
-		       .AddScoped<IHandler<GetAllRequest, GetAllResponse>, GetAllHandler>();
-		builder.Services
-		       .AddScoped<IHandler<GetTableStatusRequest, GetTableStatusResponse>,
-			       GetTableStatusHandler>();
-		builder.Services
-		       .AddScoped<IHandler<CloseTableRequest, CloseTableResponse>,
-			       CloseTableHandler>();
-		builder.Services
-		       .AddScoped<IHandler<GetOpenTablesRequest, GetOpenTablesResponse>,
-			       GetOpenTablesHandler>();
-
+		builder.Services.AddRestaurantBackendHandlers();
+		
 		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 		builder.Services.AddEndpointsApiExplorer();
 		builder.Services.AddSwaggerGen();
@@ -56,6 +37,7 @@ public class Program
 
 		app.UseAuthorization();
 
+		app.MapRestaurantBackendEndpoints();
 		app.MapControllers();
 
 		app.Run();
