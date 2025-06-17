@@ -13,10 +13,6 @@ namespace RestaurantBackend.Features.Tables.Endpoints
 	{
 		public sealed record Command
 		{
-			public sealed record CommandBody
-			{
-				public required int TableId { get; init; }
-			}
 			[FromRoute] public required int TableId { get; init; }
 		}
 
