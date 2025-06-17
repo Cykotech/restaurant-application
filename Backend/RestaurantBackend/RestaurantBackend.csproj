@@ -22,10 +22,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\MenuItems\CreateNew\" />
-      <Folder Include="Features\MenuItems\Delete\" />
-      <Folder Include="Features\MenuItems\GetById\" />
-      <Folder Include="Features\MenuItems\Update\" />
       <Folder Include="Features\Orders\" />
     </ItemGroup>
 
