@@ -19,7 +19,9 @@ public class Program
 		{
 			options.AddPolicy(
 				name: developmentPolicy,
-				policy => { policy.WithOrigins("http://localhost:5173"); }
+				policy => { policy.WithOrigins("http://localhost:5173")
+				                  .AllowAnyHeader()
+				                  .AllowAnyMethod(); }
 			);
 		});
 
