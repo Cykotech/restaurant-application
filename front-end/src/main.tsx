@@ -7,6 +7,7 @@ import TablesPage from "@/pages/TablesPage.tsx";
 import {DefaultLayout} from "@/layouts/DefaultLayout.tsx";
 import {TableDetails} from "@/components/tables/TableDetails.tsx";
 import {TablesLayout} from "@/layouts/TablesLayout.tsx";
+import {TableEdit} from "@/components/tables/TableEdit.tsx";
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -14,13 +15,15 @@ createRoot(document.getElementById('root')!).render(
             <Routes>
                 <Route element={<DefaultLayout/>}>
                     <Route path="/" element={<App/>}/>
-                    <Route path="/tables" element={<TablesPage/>}>
+                    <Route path="/tables">
                         <Route element={<TablesLayout/>}>
+                            <Route index element={<TablesPage/>}/>
                             <Route path=":id" element={<TableDetails/>}/>
+                            <Route path="edit" element={<TableEdit/>}/>
                         </Route>
                     </Route>
                 </Route>
             </Routes>
         </BrowserRouter>
-    </StrictMode>,
-)
+    </StrictMode>
+);
