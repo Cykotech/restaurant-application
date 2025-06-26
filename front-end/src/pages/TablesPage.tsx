@@ -8,8 +8,6 @@ export default function TablesPage() {
     const [tables, setTables] = useState<Table[] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    console.log("Component mounted.");
-
     useEffect(() => {
         let ignore = false;
 
