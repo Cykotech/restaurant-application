@@ -2,25 +2,38 @@ import {tableService} from "@/services/tablesService.ts";
 import {useState, useEffect} from "react";
 import {TableCard} from "@/components/tables/TableCard.tsx";
 import type {Table} from "@/services/tablesService.ts";
+import {Link} from "react-router";
 
 export default function TablesPage() {
-    const [tables, setTables] = useState<Table[]>(new Array<Table>());
+    const [tables, setTables] = useState<Table[] | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    console.log("Component mounted.");
 
     useEffect(() => {
-        tableService.getAllTables(false)
-            .then(response => {
-                setTables(response)
-            });
+        let ignore = false;
+
+        setIsLoading(true);
+        tableService.getAllTables(false).then(response => {
+            if (!ignore) {
+                setTables(response);
+                setIsLoading(false);
+            }
+        });
+
+        return () => {
+            ignore = true;
+        }
     }, []);
 
     return (
         <>
-            <h2>Tables</h2>
-            {tables.map(table => {
+            <Link to={"edit"}>Open Table</Link>
+            {!isLoading ? tables?.map(table => {
                 return (
                     <TableCard key={table.id} table={table}/>
                 )
-            })}
+            }) : <p>Loading...</p>}
         </>
     )
 }
