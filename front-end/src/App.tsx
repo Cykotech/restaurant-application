@@ -1,24 +1,21 @@
-import {
-    NavigationMenu,
-    NavigationMenuList,
-    NavigationMenuItem,
-    NavigationMenuLink
-} from "@/components/ui/navigation-menu.tsx";
 import './App.css'
-import {Link} from "react-router";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card.tsx";
 
 function App() {
 
     return (
-        <NavigationMenu>
-            <NavigationMenuList>
-                <NavigationMenuItem>
-                    <NavigationMenuLink>
-                        <Link to={"/tables"}>Tables</Link>
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-            </NavigationMenuList>
-        </NavigationMenu>)
+        <>
+            <p>Home</p>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Data Card</CardTitle>
+                    <CardDescription>Placeholder for data</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p>Data...</p>
+                </CardContent>
+            </Card>
+        </>)
 }
 
 export default App
