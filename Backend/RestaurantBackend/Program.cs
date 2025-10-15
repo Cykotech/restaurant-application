@@ -19,9 +19,12 @@ public class Program
 		{
 			options.AddPolicy(
 				name: developmentPolicy,
-				policy => { policy.WithOrigins("http://localhost:5173")
-				                  .AllowAnyHeader()
-				                  .AllowAnyMethod(); }
+				policy =>
+				{
+					policy.WithOrigins("http://localhost:5173")
+					      .AllowAnyHeader()
+					      .AllowAnyMethod();
+				}
 			);
 		});
 
@@ -29,16 +32,9 @@ public class Program
 			                                            options.UseSqlite(
 				                                            "Data Source=pos.db"));
 
-		builder.Services.AddRestaurantBackendHandlers();
-
 		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 		builder.Services.AddEndpointsApiExplorer();
-		builder.Services.AddSwaggerGen(options =>
-		{
-			options.CustomSchemaIds(x => x.FullName
-			                              ?.Replace(
-				                              "+", ".", StringComparison.Ordinal));
-		});
+		builder.Services.AddSwaggerGen();
 
 		var app = builder.Build();
 
@@ -54,7 +50,6 @@ public class Program
 		app.UseAuthorization();
 		app.UseCors(developmentPolicy);
 
-		app.MapRestaurantBackendEndpoints();
 		app.MapControllers();
 
 		app.Run();
