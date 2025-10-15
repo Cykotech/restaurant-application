@@ -8,7 +8,7 @@ namespace RestaurantBackend.Controllers
 {
 	[Route("api/tables")]
 	[ApiController]
-	public class TablesController : ControllerBase
+	public class TablesController : PosController
 	{
 		private readonly ITableService _service;
 
