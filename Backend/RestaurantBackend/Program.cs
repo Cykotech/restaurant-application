@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using RestaurantBackend.Data;
+using RestaurantBackend.Dtos;
+using RestaurantBackend.Services.Sessions;
 
 namespace RestaurantBackend;
 
@@ -28,6 +31,7 @@ public class Program
 			);
 		});
 
+		builder.Services.AddSingleton<ISessionService, SessionService>();
 		builder.Services.AddDbContext<PosDbContext>(options =>
 			                                            options.UseSqlite(
 				                                            "Data Source=pos.db"));
@@ -50,7 +54,60 @@ public class Program
 		app.UseAuthorization();
 		app.UseCors(developmentPolicy);
 
+		app.Use(async (context, next) =>
+		{
+			var path = context.Request.Path;
+
+			if (path.StartsWithSegments("/api/auth"))
+			{
+				await next();
+
+				return;
+			}
+
+			var header = context.Request.Headers["Authorization"].FirstOrDefault();
+
+			if (header is null || !header.StartsWith("Bearer "))
+			{
+				context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+				await context.Response.WriteAsync("Unauthorized");
+
+				return;
+			}
+
+			var token = header["Bearer ".Length..].Trim();
+
+			var sessions =
+				context.RequestServices.GetRequiredService<ISessionService>();
+
+			if (!sessions.ValidateSession(token, out var staffId))
+			{
+				context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+				await context.Response.WriteAsync("Invalid or expired session");
+
+				return;
+			}
+
+			context.Items["StaffId"] = staffId;
+
+			await next();
+		});
+
 		app.MapControllers();
+		app.MapPost("api/auth/login", async (
+			            StaffLogin loginRequest, PosDbContext context,
+			            ISessionService sessions) =>
+		            {
+			            var staff =
+				            await context.Staff.FirstOrDefaultAsync(s => s.Pin ==
+					            loginRequest.Pin);
+
+			            if (staff is null) return Results.Unauthorized();
+
+			            var token = sessions.CreateSession(staff.Id);
+
+			            return Results.Ok(token);
+		            });
 
 		app.Run();
 	}
