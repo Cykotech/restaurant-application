@@ -1,8 +1,10 @@
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using RestaurantBackend.Data;
 using RestaurantBackend.Dtos;
+using RestaurantBackend.Services.Menu;
 using RestaurantBackend.Services.Sessions;
+using RestaurantBackend.Services.StaffFeature;
+using RestaurantBackend.Services.Tables;
 
 namespace RestaurantBackend;
 
@@ -31,6 +33,9 @@ public class Program
 			);
 		});
 
+		builder.Services.AddScoped<ITableService, TableService>();
+		builder.Services.AddScoped<IMenuService, MenuService>();
+		builder.Services.AddScoped<IStaffService, StaffService>();
 		builder.Services.AddSingleton<ISessionService, SessionService>();
 		builder.Services.AddDbContext<PosDbContext>(options =>
 			                                            options.UseSqlite(
