@@ -11,8 +11,8 @@ using RestaurantBackend.Data;
 namespace RestaurantBackend.Migrations
 {
     [DbContext(typeof(PosDbContext))]
-    [Migration("20250615184408_RenameOrderItemsToMenuItems")]
-    partial class RenameOrderItemsToMenuItems
+    [Migration("20250829061015_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,7 +44,7 @@ namespace RestaurantBackend.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("MenuItems");
                 });
 
             modelBuilder.Entity("RestaurantBackend.Models.Order", b =>
@@ -66,6 +66,45 @@ namespace RestaurantBackend.Migrations
                     b.ToTable("Orders");
                 });
 
+            modelBuilder.Entity("RestaurantBackend.Models.Staff", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Pin")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Staff");
+                });
+
+            modelBuilder.Entity("RestaurantBackend.Models.StaffRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("StaffId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StaffId");
+
+                    b.ToTable("StaffRoles");
+                });
+
             modelBuilder.Entity("RestaurantBackend.Models.Table", b =>
                 {
                     b.Property<int>("Id")
@@ -85,9 +124,8 @@ namespace RestaurantBackend.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
 
                     b.PrimitiveCollection<string>("UpdatedAt")
                         .IsRequired()
@@ -114,9 +152,21 @@ namespace RestaurantBackend.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RestaurantBackend.Models.StaffRole", b =>
+                {
+                    b.HasOne("RestaurantBackend.Models.Staff", null)
+                        .WithMany("Roles")
+                        .HasForeignKey("StaffId");
+                });
+
             modelBuilder.Entity("RestaurantBackend.Models.Order", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("RestaurantBackend.Models.Staff", b =>
+                {
+                    b.Navigation("Roles");
                 });
 
             modelBuilder.Entity("RestaurantBackend.Models.Table", b =>
