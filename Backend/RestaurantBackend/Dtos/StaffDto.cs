@@ -1,3 +1,5 @@
+using RestaurantBackend.Models;
+
 namespace RestaurantBackend.Dtos
 {
 	public record StaffDto(
@@ -6,4 +8,12 @@ namespace RestaurantBackend.Dtos
 		string? Email,
 		string? PhoneNumber
 	);
+
+	public static class StaffExtensions
+	{
+		public static StaffDto ToDto(this Staff staff)
+		{
+			return new StaffDto(staff.Id, staff.Name, staff.Email, staff.PhoneNumber);
+		}
+	}
 }

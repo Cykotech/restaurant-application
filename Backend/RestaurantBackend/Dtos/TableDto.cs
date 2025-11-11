@@ -1,3 +1,5 @@
+using RestaurantBackend.Models;
+
 namespace RestaurantBackend.Dtos
 {
 	public record TableDto(
@@ -5,4 +7,12 @@ namespace RestaurantBackend.Dtos
 		int TableNumber,
 		int Seats
 	);
+
+	public static class TableExtensions
+	{
+		public static TableDto ToDto(this Table table)
+		{
+			return new(table.Id, table.TableNumber, table.Seats);
+		}
+	}
 }
