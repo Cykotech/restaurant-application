@@ -27,28 +27,15 @@ namespace RestaurantBackend.Models
 			Pin = GeneratePin();
 		}
 
-		public Staff(
-			string name, int roleId, string email,
-			string phoneNumber)
+		public void UpdateStaff(
+			string name = "", string? email = "",
+			string? phoneNumber = "")
 		{
-			if (string.IsNullOrWhiteSpace(name))
-				throw new ArgumentNullException(nameof(name));
-			if (string.IsNullOrWhiteSpace(email))
-				throw new ArgumentNullException(nameof(email));
-			if (string.IsNullOrWhiteSpace(phoneNumber))
-				throw new ArgumentNullException(nameof(phoneNumber));
-			
-			Name = name;
-			RoleId = roleId;
-			Email = email;
-			PhoneNumber = phoneNumber;
-			Pin = GeneratePin();
+			if (!string.IsNullOrWhiteSpace(name)) Name = name;
+			if (!string.IsNullOrWhiteSpace(email)) Email = email;
+			if (!string.IsNullOrWhiteSpace(phoneNumber)) PhoneNumber = phoneNumber;
 		}
-
-		private void ChangeClockInStatus()
-		{
-			IsClockedIn = !IsClockedIn;
-		}
+		public void ChangeClockStatus() { IsClockedIn = !IsClockedIn; }
 
 		private string GeneratePin()
 		{
@@ -56,6 +43,7 @@ namespace RestaurantBackend.Models
 			int pin = random.Next(10000);
 
 			string fmt = "0000";
+
 			return pin.ToString(fmt);
 		}
 	}
