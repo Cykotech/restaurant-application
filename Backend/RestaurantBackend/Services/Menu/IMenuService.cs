@@ -6,6 +6,7 @@ namespace RestaurantBackend.Services.Menu
 	public interface IMenuService
 	{
 		Task<List<MenuItemDto>> GetAllMenuItems();
+		Task<List<MenuItemDto>> GetMenuItemsByCategory(int categoryId);
 		Task<MenuItemDto> GetMenuItemById(int id);
 
 		Task<MenuItemDto> CreateMenuItem(MenuItemDto menuItemDto);

@@ -26,6 +26,18 @@ namespace RestaurantBackend.Controllers
 			catch (Exception ex) { return StatusCode(500, ex.Message); }
 		}
 
+		[HttpGet("/category/{categoryId}")]
+		public async Task<IActionResult> GetAllMenuItemsByCategory(int categoryId)
+		{
+			try
+			{
+				var menuItems = await _service.GetMenuItemsByCategory(categoryId);
+
+				return Ok(menuItems);
+			}
+			catch (Exception ex) { return StatusCode(500, ex.Message); }
+		}
+
 		[HttpGet("{id}")]
 		public async Task<IActionResult> GetMenuItem(int id)
 		{
