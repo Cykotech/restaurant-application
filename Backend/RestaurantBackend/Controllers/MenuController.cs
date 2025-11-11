@@ -68,18 +68,23 @@ namespace RestaurantBackend.Controllers
 			[FromBody] MenuItemDto menuItem)
 		{
 			var updatedMenuItemResponse = await _service.UpdateMenuItem(menuItem);
-			
+
 			return Ok(updatedMenuItemResponse);
 		}
 
-		// [HttpDelete("{id}")]
-		// public async Task<IActionResult> DeleteMenuItem(int id)
-		// {
-		// 	var response = await _service.DeleteMenuItem(id);
-		//
-		// 	if (response == 0) return StatusCode(500);
-		//
-		// 	return NoContent();
-		// }
+		[HttpDelete("{id}")]
+		public async Task<IActionResult> DeleteMenuItem(int id)
+		{
+			try
+			{
+				var response = await _service.DeleteMenuItem(id);
+
+				if (response == 0) return StatusCode(500, "Item not deleted");
+
+				return NoContent();
+			}
+			catch (NotFoundException<MenuItem> ex) { return NotFound(ex.Message); }
+			catch (Exception ex) { return StatusCode(500, ex.Message); }
+		}
 	}
 }

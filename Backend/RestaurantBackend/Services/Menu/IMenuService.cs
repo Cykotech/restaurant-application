@@ -12,6 +12,6 @@ namespace RestaurantBackend.Services.Menu
 		Task<MenuItemDto> CreateMenuItem(MenuItemDto menuItemDto);
 
 		Task<MenuItemDto> UpdateMenuItem(MenuItemDto menuItem);
-		// Task<int> DeleteMenuItem(int id);
+		Task<int> DeleteMenuItem(int id);
 	}
 }
