@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RestaurantBackend.Data;
@@ -28,7 +29,7 @@ namespace RestaurantBackend.Services.Tables
 
 			foreach (var table in tables)
 			{
-				response.Add(new(table.Id, table.TableNumber, table.Seats));
+				response.Add(table.ToDto());
 			}
 
 			return response;
@@ -40,17 +41,19 @@ namespace RestaurantBackend.Services.Tables
 
 			if (table is null) throw new NotFoundException<Table>(id);
 
-			return new(table.Id, table.TableNumber, table.Seats);
+			return table.ToDto();
 		}
 
-		public async Task<TableDto> OpenTable([FromBody] TableDto table)
+		public async Task<TableDto> OpenTable(
+			TableDto table, int serverId)
 		{
-			Table newTable = new(2, table.TableNumber, table.Seats);
+
+			Table newTable = new(serverId, table.TableNumber, table.Seats);
 
 			_dbContext.Tables.Add(newTable);
 			await _dbContext.SaveChangesAsync();
 
-			return new(newTable.Id, newTable.TableNumber, newTable.Seats);
+			return newTable.ToDto();
 		}
 
 		public async Task CloseTable(int id)

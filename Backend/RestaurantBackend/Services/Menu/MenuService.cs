@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using RestaurantBackend.Data;
 using RestaurantBackend.Dtos;
@@ -19,10 +20,24 @@ namespace RestaurantBackend.Services.Menu
 
 			foreach (var menuItem in menuItems)
 			{
-				response.Add(new(menuItem.Id, menuItem.Name, menuItem.Price,
-				                 menuItem.Description, menuItem.CategoryId));
+				response.Add(menuItem.ToDto());
 			}
-			
+
+			return response;
+		}
+
+		public async Task<List<MenuItemDto>> GetMenuItemsByCategory(int categoryId)
+		{
+			var response = new List<MenuItemDto>();
+			var menuItems = await _dbContext.MenuItems
+			                                .Where(m => m.CategoryId == categoryId)
+			                                .ToListAsync();
+
+			foreach (var menuItem in menuItems)
+			{
+				response.Add(menuItem.ToDto());
+			}
+
 			return response;
 		}
 
@@ -33,20 +48,19 @@ namespace RestaurantBackend.Services.Menu
 
 			if (menuItem is null) throw new NotFoundException<MenuItem>(id);
 
-			return new(menuItem.Id, menuItem.Name, menuItem.Price,
-			           menuItem.Description, menuItem.CategoryId);
+			return menuItem.ToDto();
 		}
 
-		public async Task<MenuItemDto> CreateMenuItem(
-			MenuItemDto menuItem)
+		public async Task<MenuItemDto> CreateMenuItem(MenuItemDto menuItem)
 		{
-			var newItem = new MenuItem(menuItem.Name, menuItem.Description, menuItem.Price, menuItem.CategoryId);
+			var newItem = new MenuItem(menuItem.Name, menuItem.Description,
+			                           menuItem.Price, menuItem.CategoryId);
 
 			_dbContext.MenuItems.Add(newItem);
 
 			await _dbContext.SaveChangesAsync();
 
-			return new(newItem.Id, newItem.Name, newItem.Price, newItem.Description, newItem.CategoryId);
+			return newItem.ToDto();
 		}
 
 		public async Task<MenuItemDto> UpdateMenuItem(MenuItemDto menuItem)
@@ -57,13 +71,24 @@ namespace RestaurantBackend.Services.Menu
 
 			if (itemToUpdate is null)
 				throw new NotFoundException<MenuItem>(menuItem.Id);
-
-			itemToUpdate.UpdateItem(menuItem.Name, menuItem.Description, menuItem.Price);
-
+			
+			itemToUpdate.UpdateItem(menuItem.Name, menuItem.Description,
+			                        menuItem.Price);
 			await _dbContext.SaveChangesAsync();
 
-			return new(itemToUpdate.Id, itemToUpdate.Name, itemToUpdate.Price,
-			           itemToUpdate.Description, itemToUpdate.CategoryId);
+			return itemToUpdate.ToDto();
+		}
+
+		public async Task<int> DeleteMenuItem(int id)
+		{
+			var itemToDelete =
+				await _dbContext.MenuItems.FirstOrDefaultAsync(m => m.Id == id);
+			
+			if (itemToDelete is null)
+				throw new NotFoundException<MenuItem>(id);
+			
+			_dbContext.Remove(itemToDelete);
+			return await _dbContext.SaveChangesAsync();
 		}
 	}
 }
