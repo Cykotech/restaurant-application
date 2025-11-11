@@ -15,11 +15,15 @@ namespace RestaurantBackend.Controllers
 		public TablesController(ITableService service) { _service = service; }
 
 		[HttpGet]
-		public async Task<IActionResult> GetAllTables(bool showClosed = true)
+		public async Task<IActionResult> GetAllTables(
+			bool showClosed = false, bool showByServer = true)
 		{
 			try
 			{
-				var tables = await _service.GetAllTables(showClosed);
+				var server = HttpContext.GetStaffId();
+
+				var tables =
+					await _service.GetAllTables(showClosed, showByServer, server);
 
 				return Ok(tables);
 			}
@@ -27,7 +31,7 @@ namespace RestaurantBackend.Controllers
 		}
 
 		[HttpGet("{id}")]
-		public async Task<IActionResult> GetTable(int id)
+		public async Task<IActionResult> GetTableById(int id)
 		{
 			try
 			{
@@ -40,13 +44,19 @@ namespace RestaurantBackend.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> OpenTable(
-			[FromBody] TableDto newTable)
+		public async Task<IActionResult> OpenTable([FromBody] TableDto newTable)
 		{
-			var newTableResponse = await _service.OpenTable(newTable);
+			try
+			{
+				var server = HttpContext.GetStaffId();
+				var newTableResponse = await _service.OpenTable(newTable, server);
 
-			return CreatedAtAction(nameof(GetTable), new { id = newTableResponse.Id },
-			                       newTableResponse);
+				return CreatedAtAction(nameof(GetTableById),
+				                       new { id = newTableResponse.Id },
+				                       newTableResponse);
+			}
+			// TODO Handle custom exception from extension
+			catch (Exception ex) { return StatusCode(500, ex.Message); }
 		}
 
 		[HttpPut("{id}")]
