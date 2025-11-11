@@ -5,14 +5,14 @@
 namespace RestaurantBackend.Migrations
 {
     /// <inheritdoc />
-    public partial class RenameOrderItemsToMenuItems : Migration
+    public partial class AddStaffPin : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "Description",
-                table: "OrderItems",
+                name: "Pin",
+                table: "Staff",
                 type: "TEXT",
                 nullable: false,
                 defaultValue: "");
@@ -22,8 +22,8 @@ namespace RestaurantBackend.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Description",
-                table: "OrderItems");
+                name: "Pin",
+                table: "Staff");
         }
     }
 }

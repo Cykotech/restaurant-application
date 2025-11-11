@@ -1,5 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using RestaurantBackend.Data;
+using RestaurantBackend.Dtos;
+using RestaurantBackend.Services.Menu;
+using RestaurantBackend.Services.Sessions;
+using RestaurantBackend.Services.StaffFeature;
+using RestaurantBackend.Services.Tables;
 
 namespace RestaurantBackend;
 
@@ -19,26 +24,26 @@ public class Program
 		{
 			options.AddPolicy(
 				name: developmentPolicy,
-				policy => { policy.WithOrigins("http://localhost:5173")
-				                  .AllowAnyHeader()
-				                  .AllowAnyMethod(); }
+				policy =>
+				{
+					policy.WithOrigins("http://localhost:5173")
+					      .AllowAnyHeader()
+					      .AllowAnyMethod();
+				}
 			);
 		});
 
+		builder.Services.AddScoped<ITableService, TableService>();
+		builder.Services.AddScoped<IMenuService, MenuService>();
+		builder.Services.AddScoped<IStaffService, StaffService>();
+		builder.Services.AddSingleton<ISessionService, SessionService>();
 		builder.Services.AddDbContext<PosDbContext>(options =>
 			                                            options.UseSqlite(
 				                                            "Data Source=pos.db"));
 
-		builder.Services.AddRestaurantBackendHandlers();
-
 		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 		builder.Services.AddEndpointsApiExplorer();
-		builder.Services.AddSwaggerGen(options =>
-		{
-			options.CustomSchemaIds(x => x.FullName
-			                              ?.Replace(
-				                              "+", ".", StringComparison.Ordinal));
-		});
+		builder.Services.AddSwaggerGen();
 
 		var app = builder.Build();
 
@@ -54,8 +59,60 @@ public class Program
 		app.UseAuthorization();
 		app.UseCors(developmentPolicy);
 
-		app.MapRestaurantBackendEndpoints();
+		app.Use(async (context, next) =>
+		{
+			var path = context.Request.Path;
+
+			if (path.StartsWithSegments("/api/auth"))
+			{
+				await next();
+
+				return;
+			}
+
+			var header = context.Request.Headers["Authorization"].FirstOrDefault();
+
+			if (header is null || !header.StartsWith("Bearer "))
+			{
+				context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+				await context.Response.WriteAsync("Unauthorized");
+
+				return;
+			}
+
+			var token = header["Bearer ".Length..].Trim();
+
+			var sessions =
+				context.RequestServices.GetRequiredService<ISessionService>();
+
+			if (!sessions.ValidateSession(token, out var staffId))
+			{
+				context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+				await context.Response.WriteAsync("Invalid or expired session");
+
+				return;
+			}
+
+			context.Items["StaffId"] = staffId;
+
+			await next();
+		});
+
 		app.MapControllers();
+		app.MapPost("api/auth/login", async (
+			            StaffLogin loginRequest, PosDbContext context,
+			            ISessionService sessions) =>
+		            {
+			            var staff =
+				            await context.Staff.FirstOrDefaultAsync(s => s.Pin ==
+					            loginRequest.Pin);
+
+			            if (staff is null) return Results.Unauthorized();
+
+			            var token = sessions.CreateSession(staff.Id);
+
+			            return Results.Ok(token);
+		            });
 
 		app.Run();
 	}
