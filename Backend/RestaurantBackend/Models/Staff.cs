@@ -12,33 +12,18 @@ namespace RestaurantBackend.Models
 		public string Pin { get; private set; }
 		public List<Order> Orders { get; init; } = new();
 
-		public Staff(string name, int roleId)
-		{
-			if (string.IsNullOrWhiteSpace(name))
-				throw new ArgumentNullException(nameof(name));
-			
-			Name = name;
-			RoleId = roleId;
-			Pin = GeneratePin();
-		}
-
 		public Staff(
 			string name, int roleId,
-			string emailOrPhoneNumber)
+			string? email,
+			string? phoneNumber)
 		{
 			if (string.IsNullOrWhiteSpace(name))
 				throw new ArgumentNullException(nameof(name));
-			if (string.IsNullOrWhiteSpace(emailOrPhoneNumber))
-				throw new ArgumentNullException(nameof(emailOrPhoneNumber));
-			
+
 			Name = name;
 			RoleId = roleId;
-			
-			if (emailOrPhoneNumber.All(char.IsDigit))
-				PhoneNumber = emailOrPhoneNumber;
-			else
-				Email = emailOrPhoneNumber;
-			
+			Email = !string.IsNullOrWhiteSpace(email) ? email : null;
+			PhoneNumber = !string.IsNullOrWhiteSpace(phoneNumber) ? phoneNumber : null;
 			Pin = GeneratePin();
 		}
 
