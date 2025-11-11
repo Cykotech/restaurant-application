@@ -13,13 +13,18 @@ namespace RestaurantBackend.Services.Tables
 
 		public TableService(PosDbContext dbContext) { _dbContext = dbContext; }
 
-		public async Task<List<TableDto>> GetAllTables(bool showClosed)
+		public async Task<List<TableDto>> GetAllTables(
+			bool showClosed, bool showByServer,
+			int serverId)
 		{
 			var response = new List<TableDto>();
 			var tables = await _dbContext.Tables.ToListAsync();
 
 			if (!showClosed)
 				tables = tables.Where(t => t.Status != TableStatus.Closed).ToList();
+
+			if (showByServer)
+				tables = tables.Where(t => t.ServerId == serverId).ToList();
 
 			foreach (var table in tables)
 			{
